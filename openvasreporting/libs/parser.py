@@ -10,10 +10,8 @@ import logging
 from .config import Config
 from .parsed_data import Host, Port, Vulnerability
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG,
+logging.basicConfig(stream=sys.stderr, level=logging.ERROR,
                     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-# logging.basicConfig(stream=sys.stderr, level=logging.ERROR,
-#                    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
 __all__ = ["openvas_parser"]
 
@@ -124,7 +122,7 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], hostname_file=No
             vuln_host = vuln.find("./host").text
             vuln_host_name = vuln.find("./host/hostname").text
             if vuln_host_name is None:
-                    vuln_host_name = "N/A"
+                    vuln_host_name = "Unknown"
             
             # If we are using a hostname map try lookup host name
             if len(hostname_dictionary) > 0:

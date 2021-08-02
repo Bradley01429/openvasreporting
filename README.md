@@ -1,5 +1,8 @@
 # OpenVAS Reporting:  
 
+[![License](https://img.shields.io/github/license/TheGroundZero/openvasreporting.svg)](https://github.com/TheGroundZero/openvasreporting/blob/master/LICENSE)
+[![Known Vulnerabilities](https://snyk.io/test/github/TheGroundZero/openvasreporting/badge.svg?targetFile=requirements.txt)]
+
 A tool to convert [OpenVAS](http://www.openvas.org/) XML into reports with the ability to supply a custom hostname file. This repo has been forked from https://github.com/TheGroundZero/openvasreporting Commit hash: (https://github.com/TheGroundZero/openvasreporting/commit/fe25b8359933df57c2129c2b1babde966d741f18)
 
 ![Report example screenshot](docs/_static/img/OpenVASreporting.png?raw=true)
