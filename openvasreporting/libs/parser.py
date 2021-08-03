@@ -31,7 +31,7 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_fi
     :param min_level: Minimal level (none, low, medium, high, critical) for displaying vulnerabilities
     :type min_level: str
 
-    :param nmap_hostname_file: File containg a list of hostnames and ips from Namp to use when converting IPs to host names
+    :param nmap_hostname_file: File containg a list of hostnames and ips from Nmap to use when converting IPs to host names
     :type nmap_hostname_file: str
 
     :return: list
