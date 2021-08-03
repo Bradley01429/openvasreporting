@@ -31,7 +31,7 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_fi
     :param min_level: Minimal level (none, low, medium, high, critical) for displaying vulnerabilities
     :type min_level: str
 
-    :param nmap_hostname_file: File containg a list of hostnames and ips from Nmap to use when converting IPs to host names
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to host names
     :type nmap_hostname_file: str
 
     :return: list
@@ -54,7 +54,7 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_fi
     if not isinstance(min_level, str):
         raise TypeError("Expected basestring, got '{}' instead".format(type(min_level)))
 
-    # Load nmap hostname dictionary
+    # Load Nmap hostname dictionary
     hostname_dictionary = load_hostnames_from_nmap(nmap_hostname_file)
 
     vulnerabilities = {}
@@ -125,7 +125,7 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_fi
                     vuln_host_name = "Unknown"
             
             # If we are using a Nmap file for hostnames try lookup host name
-            if len(hostname_dictionary) > 0:
+            if hostname_dictionary is not None:
                 if vuln_host in hostname_dictionary:
                     vuln_host_name = hostname_dictionary[vuln_host]
 
@@ -237,15 +237,28 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_fi
 
     return list(vulnerabilities.values())
 
-def load_hostnames_from_nmap(hostname_file):
-    # No hostname Nmap to load
-    if hostname_file is None:
-        return {}
+def load_hostnames_from_nmap(nmap_hostname_file):
+    """
+    This function takes a Nmap file which contains IP address and hostnamesand loads the information
+    into a dictionary with the IP address being they key and the hostname being the value. This is returned
+    to the user. If None for nmap_hostname_file is supplied then None will be returned from the function 
 
-    if hostname_file is not None and not isinstance(hostname_file, str):
-        raise TypeError("Expected str, got '{}' instead".format(type(hostname_file)))
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to host names
+    :type nmap_hostname_file: str
 
-    with open(hostname_file) as f:
+    :return: Dictionary
+
+    :raises: TypeError, IOError 
+    """
+
+    # No Nmap file to load so do nothing and return
+    if nmap_hostname_file is None:
+        return None
+
+    if nmap_hostname_file is not None and not isinstance(nmap_hostname_file, str):
+        raise TypeError("Expected str, got '{}' instead".format(type(nmap_hostname_file)))
+
+    with open(nmap_hostname_file, 'r' ) as f:
         unprocessed_data = f.readlines()
 
     # This string below has to be within the string be parsed
