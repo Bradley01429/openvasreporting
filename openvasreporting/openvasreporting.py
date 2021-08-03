@@ -25,17 +25,17 @@ def main():
     parser.add_argument("-f", "--format", dest="filetype", help="Output format (xlsx)", required=False, default="xlsx")
     parser.add_argument("-t", "--template", dest="template", help="Template file for docx export", required=False,
                         default=None)
-    parser.add_argument("-h", "--hostname", dest="hostname_file", help="Hostname file used to convert IPs to hostnames", required=False,
+    parser.add_argument("-nh", "--nmaphostname", dest="nmap_hostname_file", help="File contining a list of hostnames and ips from Nmap to use when converting IPs to host names", required=False,
                         default=None)
 
     args = parser.parse_args()
 
-    config = create_config(args.input_files, args.output_file, args.min_lvl, args.filetype, args.template, args.hostname_file)
+    config = create_config(args.input_files, args.output_file, args.min_lvl, args.filetype, args.template, args.nmap_hostname_file)
 
     convert(config)
 
 
-def create_config(input_files, output_file="openvas_report", min_lvl="none", filetype="xlsx", template=None, hostname_file=None):
+def create_config(input_files, output_file="openvas_report", min_lvl="none", filetype="xlsx", template=None, nmap_hostname_file=None):
     """
     Create config file to be used by converter.
 
@@ -54,8 +54,8 @@ def create_config(input_files, output_file="openvas_report", min_lvl="none", fil
     :param template: template to be used in case of export to docx filetype
     :type template: str
 
-    :param hostname_file: file containg a list of hostnames and ips to use when converting IPs to host names
-    :type hostname_file: str
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to host names
+    :type nmap_hostname_file: str
 
     :raises: ValueError
 
@@ -68,9 +68,9 @@ def create_config(input_files, output_file="openvas_report", min_lvl="none", fil
     check_filetype(filetype)
 
     if template is not None:
-        return Config(input_files, output_file, min_lvl, filetype, template, hostname_file)
+        return Config(input_files, output_file, min_lvl, filetype, template, nmap_hostname_file)
     else:
-        return Config(input_files, output_file, min_lvl, filetype, hostname_file=hostname_file)
+        return Config(input_files, output_file, min_lvl, filetype, nmap_hostname_file=nmap_hostname_file)
 
 
 def convert(config):
