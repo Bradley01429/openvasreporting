@@ -10,7 +10,7 @@ import logging
 from .config import Config
 from .parsed_data import Host, Port, Vulnerability
 
-logging.basicConfig(stream=sys.stderr, level=logging.ERROR,
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG,
                     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
 __all__ = ["openvas_parser"]
@@ -240,4 +240,23 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], hostname_file=No
 def load_hostname_map(hostname_file):
     if hostname_file is not None and not isinstance(hostname_file, str):
         raise TypeError("Expected str, got '{}' instead".format(type(hostname_file)))
-    return {}
+
+    with open(hostname_file) as f:
+        host_details = f.readlines()
+
+    prefix_string = "nmap scan report for "
+    loaded_hostnames = {}
+    for current_line in host_details:
+        current_line = current_line.lower()
+        if prefix_string in current_line:
+            # Line as expected prefix so start parsing
+            current_line = current_line.replace(prefix_string, '')
+            current_line = current_line.replace('\n', '')
+            current_line = current_line.replace('(', '')
+            current_line = current_line.replace(')', '')
+            # Split hostname and IP
+            space_index = current_line.find(' ')
+            host_name = current_line[0:space_index]
+            ip = current_line[space_index + 1::]
+            loaded_hostnames[ip] = host_name
+    return loaded_hostnames
