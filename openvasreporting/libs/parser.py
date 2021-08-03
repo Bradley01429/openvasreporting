@@ -31,7 +31,7 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_fi
     :param min_level: Minimal level (none, low, medium, high, critical) for displaying vulnerabilities
     :type min_level: str
 
-    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to host names
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames
     :type nmap_hostname_file: str
 
     :return: list
@@ -243,7 +243,7 @@ def load_hostnames_from_nmap(nmap_hostname_file):
     into a dictionary with the IP address being they key and the hostname being the value. This is returned
     to the user. If None for nmap_hostname_file is supplied then None will be returned from the function 
 
-    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to host names
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames
     :type nmap_hostname_file: str
 
     :return: Dictionary

@@ -25,7 +25,7 @@ def main():
     parser.add_argument("-f", "--format", dest="filetype", help="Output format (xlsx)", required=False, default="xlsx")
     parser.add_argument("-t", "--template", dest="template", help="Template file for docx export", required=False,
                         default=None)
-    parser.add_argument("-nh", "--nmaphostname", dest="nmap_hostname_file", help="File contining a list of hostnames and ips from Nmap to use when converting IPs to host names", required=False,
+    parser.add_argument("-nh", "--nmaphostname", dest="nmap_hostname_file", help="File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames", required=False,
                         default=None)
 
     args = parser.parse_args()
@@ -54,7 +54,7 @@ def create_config(input_files, output_file="openvas_report", min_lvl="none", fil
     :param template: template to be used in case of export to docx filetype
     :type template: str
 
-    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to host names
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames
     :type nmap_hostname_file: str
 
     :raises: ValueError
@@ -89,7 +89,7 @@ def convert(config):
         raise NotImplementedError("Filetype not supported, got {}, expecting one of {}".format(config.filetype,
                                                                                                exporters().keys()))
 
-    openvas_info = openvas_parser(config.input_files, config.min_level, config.hostname_file)
+    openvas_info = openvas_parser(config.input_files, config.min_level, config.nmap_hostname_file)
 
     exporters()[config.filetype](openvas_info, config.template, config.output_file)
 
