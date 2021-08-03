@@ -21,7 +21,7 @@ except ImportError:
     from xml.etree import ElementTree as Et
 
 
-def openvas_parser(input_files, min_level=Config.levels()["n"], hostname_file=None):
+def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_file=None):
     """
     This function takes an OpenVAS XML report and returns Vulnerability info
 
@@ -31,8 +31,8 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], hostname_file=No
     :param min_level: Minimal level (none, low, medium, high, critical) for displaying vulnerabilities
     :type min_level: str
 
-    :param hostname_file: File containg a list of hostnames and ips to use when converting IPs to host names
-    :type hostname_file: str
+    :param nmap_hostname_file: File containg a list of hostnames and ips from Namp to use when converting IPs to host names
+    :type nmap_hostname_file: str
 
     :return: list
 
@@ -54,8 +54,8 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], hostname_file=No
     if not isinstance(min_level, str):
         raise TypeError("Expected basestring, got '{}' instead".format(type(min_level)))
 
-    # Load hostname dictionary
-    hostname_dictionary = load_hostnames_from_nmap(hostname_file)
+    # Load nmap hostname dictionary
+    hostname_dictionary = load_hostnames_from_nmap(nmap_hostname_file)
 
     vulnerabilities = {}
 
@@ -124,7 +124,7 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], hostname_file=No
             if vuln_host_name is None:
                     vuln_host_name = "Unknown"
             
-            # If we are using a hostname map try lookup host name
+            # If we are using a Nmap file for hostnames try lookup host name
             if len(hostname_dictionary) > 0:
                 if vuln_host in hostname_dictionary:
                     vuln_host_name = hostname_dictionary[vuln_host]
@@ -238,6 +238,10 @@ def openvas_parser(input_files, min_level=Config.levels()["n"], hostname_file=No
     return list(vulnerabilities.values())
 
 def load_hostnames_from_nmap(hostname_file):
+    # No hostname Nmap to load
+    if hostname_file is None:
+        return {}
+
     if hostname_file is not None and not isinstance(hostname_file, str):
         raise TypeError("Expected str, got '{}' instead".format(type(hostname_file)))
 
