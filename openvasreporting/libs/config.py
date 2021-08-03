@@ -9,7 +9,7 @@
 
 class Config(object):
     def __init__(self, input_files, output_file="openvas_report", min_level="none", filetype="xlsx",
-                 template=None, hostname_file=None):
+                 template=None, nmap_hostname_file=None):
         """
         :param input_files: input file path
         :type input_files: list(str)
@@ -26,8 +26,8 @@ class Config(object):
         :param template: template to use
         :type template: str
 
-        :param hostname_file: File containg a list of hostnames and ips to use when converting IPs to host names
-        :type hostname_file: str
+        :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to host names
+        :type nmap_hostname_file: str
 
         :raises: TypeError, ValueError
         """
@@ -46,8 +46,8 @@ class Config(object):
             raise TypeError("Expected str, got '{}' instead".format(type(filetype)))
         if template is not None and not isinstance(template, str):
             raise TypeError("Expected str, got '{}' instead".format(type(template)))
-        if hostname_file is not None and not isinstance(hostname_file, str):
-            raise TypeError("Expected str, got '{}' instead".format(type(hostname_file)))
+        if nmap_hostname_file is not None and not isinstance(nmap_hostname_file, str):
+            raise TypeError("Expected str, got '{}' instead".format(type(nmap_hostname_file)))
 
         self.input_files = input_files
         self.output_file = "{}.{}".format(output_file, filetype) if output_file.split(".")[-1] != filetype \
@@ -55,7 +55,7 @@ class Config(object):
         self.min_level = min_level
         self.filetype = filetype
         self.template = template
-        self.hostname_file = hostname_file
+        self.nmap_hostname_file = nmap_hostname_file
 
     @staticmethod
     def colors():
