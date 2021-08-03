@@ -49,14 +49,14 @@ This currently has some issues (see #4)
 
 ### Parameters
 
-| Short param | Long param | Description     | Required | Default value                              |
-| :---------: | :--------- | :-------------- | :------: | :----------------------------------------- |
-| -i          | --input    | Input file(s)   | YES      | n/a                                        |
-| -o          | --output   | Output filename | No       | openvas_report                             |
-| -f          | --format   | Output format   | No       | xlsx                                       |
-| -l          | --level    | Minimal level   | No       | n                                          |
-| -t          | --template | Docx template   | No       | openvasreporting/src/openvas-template.docx |
-| -h          | --hostname | Docx template   | No       | n/a                                        |
+| Short param | Long param | Description                  | Required | Default value                              |
+| :---------: | :--------- | :--------------------------- | :------: | :----------------------------------------- |
+| -i          | --input    | Input file(s)                | YES      | n/a                                        |
+| -o          | --output   | Output filename              | No       | openvas_report                             |
+| -f          | --format   | Output format                | No       | xlsx                                       |
+| -l          | --level    | Minimal level                | No       | n                                          |
+| -t          | --template | Docx template                | No       | openvasreporting/src/openvas-template.docx |
+| -h          | --hostname | Nmap file containg hostnames | No       | n/a                                        |
 
 ## Examples
 
