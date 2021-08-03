@@ -25,15 +25,17 @@ def main():
     parser.add_argument("-f", "--format", dest="filetype", help="Output format (xlsx)", required=False, default="xlsx")
     parser.add_argument("-t", "--template", dest="template", help="Template file for docx export", required=False,
                         default=None)
+    parser.add_argument("-nh", "--nmaphostname", dest="nmap_hostname_file", help="File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames", required=False,
+                        default=None)
 
     args = parser.parse_args()
 
-    config = create_config(args.input_files, args.output_file, args.min_lvl, args.filetype, args.template)
+    config = create_config(args.input_files, args.output_file, args.min_lvl, args.filetype, args.template, args.nmap_hostname_file)
 
     convert(config)
 
 
-def create_config(input_files, output_file="openvas_report", min_lvl="none", filetype="xlsx", template=None):
+def create_config(input_files, output_file="openvas_report", min_lvl="none", filetype="xlsx", template=None, nmap_hostname_file=None):
     """
     Create config file to be used by converter.
 
@@ -52,6 +54,9 @@ def create_config(input_files, output_file="openvas_report", min_lvl="none", fil
     :param template: template to be used in case of export to docx filetype
     :type template: str
 
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames
+    :type nmap_hostname_file: str
+
     :raises: ValueError
 
     :return: config file to be passed to converter
@@ -63,9 +68,9 @@ def create_config(input_files, output_file="openvas_report", min_lvl="none", fil
     check_filetype(filetype)
 
     if template is not None:
-        return Config(input_files, output_file, min_lvl, filetype, template)
+        return Config(input_files, output_file, min_lvl, filetype, template, nmap_hostname_file)
     else:
-        return Config(input_files, output_file, min_lvl, filetype)
+        return Config(input_files, output_file, min_lvl, filetype, nmap_hostname_file=nmap_hostname_file)
 
 
 def convert(config):
@@ -84,7 +89,7 @@ def convert(config):
         raise NotImplementedError("Filetype not supported, got {}, expecting one of {}".format(config.filetype,
                                                                                                exporters().keys()))
 
-    openvas_info = openvas_parser(config.input_files, config.min_level)
+    openvas_info = openvas_parser(config.input_files, config.min_level, config.nmap_hostname_file)
 
     exporters()[config.filetype](openvas_info, config.template, config.output_file)
 

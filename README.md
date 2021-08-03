@@ -1,37 +1,17 @@
 # OpenVAS Reporting:  
 
-[![GitHub version](https://badge.fury.io/gh/TheGroundZero%2Fopenvasreporting.svg)](https://badge.fury.io/gh/TheGroundZero%2Fopenvasreporting)
 [![License](https://img.shields.io/github/license/TheGroundZero/openvasreporting.svg)](https://github.com/TheGroundZero/openvasreporting/blob/master/LICENSE)
-[![Docs](https://readthedocs.org/projects/openvas-reporting/badge/?version=latest&style=flat)](https://openvas-reporting.sequr.be)
-[![Known Vulnerabilities](https://snyk.io/test/github/TheGroundZero/openvasreporting/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/TheGroundZero/openvasreporting?targetFile=requirements.txt)
-[![codecov](https://codecov.io/gh/TheGroundZero/openvasreporting/branch/master/graph/badge.svg)](https://codecov.io/gh/TheGroundZero/openvasreporting)
-[![Requirements Status](https://requires.io/github/TheGroundZero/openvasreporting/requirements.svg?branch=master)](https://requires.io/github/TheGroundZero/openvasreporting/requirements/?branch=master)
-[![PyPI - Version](https://img.shields.io/pypi/v/OpenVAS-Reporting.svg)](https://pypi.org/project/OpenVAS-Reporting/)
-[![PyPI - Format](https://img.shields.io/pypi/format/OpenVAS-Reporting.svg)](https://pypi.org/project/OpenVAS-Reporting/)
+[![Known Vulnerabilities](https://snyk.io/test/github/TheGroundZero/openvasreporting/badge.svg?targetFile=requirements.txt)]
 
-A tool to convert [OpenVAS](http://www.openvas.org/) XML into reports.
+A tool to convert [OpenVAS](http://www.openvas.org/) XML into reports with the ability to supply a Nmap output file to use for hostname lookups. This repo has been forked from https://github.com/TheGroundZero/openvasreporting. Commit hash: (https://github.com/TheGroundZero/openvasreporting/commit/fe25b8359933df57c2129c2b1babde966d741f18)
 
 ![Report example screenshot](docs/_static/img/OpenVASreporting.png?raw=true)
-
-*Read the full documentation at [https://openvas-reporting.sequr.be](https://openvas-reporting.sequr.be)*
-
-I forked [OpenVAS2Report](https://github.com/cr0hn/openvas_to_report) since it didn't manage to convert all reports I threw at it
-and because I wanted to learn how to use Python for working with XML and creating Excel files.  
-Also, OpenVAS mixes their own threat levels with the [CVSS](https://www.first.org/cvss/) scoring, the latter of which I prefer to use in my reports.
-
-Looking for a fix and providing an actual fix through a pull request would have been too much work,
-so I chose to fork the repo and try my own thing.  
-I reorganised some of the files, removed some functionality and added some extra, and rewrote some functions.
-
-At this moment in time, the script only output .xlsx documents in one format, this may (not) change in the future.
-
 
 ## Requirements
 
  - [Python](https://www.python.org/) version 3
  - [XlsxWriter](https://xlsxwriter.readthedocs.io/)
  - [Python-docx](https://python-docx.readthedocs.io)
-
 
 ## Installation
 
@@ -40,7 +20,7 @@ At this moment in time, the script only output .xlsx documents in one format, th
     yum -y install python3 python3-pip    # CentOS
     dnf install python3 python3-pip       # Fedora
     # Clone repo
-    git clone https://github.com/TheGroundZero/openvasreporting.git
+    git clone https://github.com/Bradley01429/openvasreporting
     # Install required python packages
     cd openvasreporting
     pip3 install -r requirements.txt
@@ -64,23 +44,33 @@ This currently has some issues (see #4)
     # When working from the Git repo
     python3 -m openvasreporting -i [OpenVAS xml file(s)] [-o [Output file]] [-f [Output format]] [-l [minimal threat level (n, l, m, h, c)]] [-t [docx template]]
     # When using the pip package
-    openvasreporting -i [OpenVAS xml file(s)] [-o [Output file]] [-f [Output format]] [-l [minimal threat level (n, l, m, h, c)]] [-t [docx template]]
+    openvasreporting -i [OpenVAS xml file(s)] [-o [Output file]] [-f [Output format]] [-l [minimal threat level (n, l, m, h, c)]] [-t [docx template]] [-nh Nmap hostname file]
 
 ### Parameters
 
-| Short param | Long param | Description     | Required | Default value                              |
-| :---------: | :--------- | :-------------- | :------: | :----------------------------------------- |
-| -i          | --input    | Input file(s)   | YES      | n/a                                        |
-| -o          | --output   | Output filename | No       | openvas_report                             |
-| -f          | --format   | Output format   | No       | xlsx                                       |
-| -l          | --level    | Minimal level   | No       | n                                          |
-| -t          | --template | Docx template   | No       | openvasreporting/src/openvas-template.docx |
+| Short param | Long param     | Description                    | Required | Default value                              |
+| :---------: | :------------- | :----------------------------- | :------: | :----------------------------------------- |
+| -i          | --input        | Input file(s)                  | YES      | n/a                                        |
+| -o          | --output       | Output filename                | No       | openvas_report                             |
+| -f          | --format       | Output format                  | No       | xlsx                                       |
+| -l          | --level        | Minimal level                  | No       | n                                          |
+| -t          | --template     | Docx template                  | No       | openvasreporting/src/openvas-template.docx |
+| -nh         | --nmaphostname | Nmap file containing hostnames | No       | n/a                                        |
 
 ## Examples
+
+# Example input nmap file to use for hostname lookup
+    Nmap scan report for AAA.co.uk (192.171.1.12)
+    Nmap scan report for BBB.co.uk (10.254.240.175)
+    Nmap scan report for CCCC.test.local (10.254.230.10)
 
 ### Create Excel report from 1 OpenVAS XML report using default settings
 
     python3 -m openvasreporting -i openvasreport.xml -f xlsx
+
+### Create Excel report from 1 OpenVAS XML report using default settings nmap file for hostnames
+
+    python3 -m openvasreporting -i openvasreport.xml -f xlsx -nh NmapResult.txt
 
 ### Create Excel report from multiple OpenVAS reports using default settings
 
@@ -102,12 +92,3 @@ The final report (in Excel format) will then look something like this:
 ![Report example screenshot - Vuln desc](docs/_static/img/screenshot-report2.png?raw=true)
 
 Worksheets are sorted according to CVSS score and are colored according to the vulnerability level.
-
-## Ideas
-
-Some of the ideas I still have for future functionality:
-
- - list vulnerabilities per host
- - filter by host (scope/exclude) as in OpenVAS2Report
- - select threat levels individually (e.g. none and low; but not med, high and crit)
- - import other formats (not only XML), e.g. CSV as suggested in [this issue](https://github.com/TheGroundZero/openvasreporting_server/issues/3)

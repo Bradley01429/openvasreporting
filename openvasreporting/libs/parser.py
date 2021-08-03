@@ -10,10 +10,8 @@ import logging
 from .config import Config
 from .parsed_data import Host, Port, Vulnerability
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG,
+logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-# logging.basicConfig(stream=sys.stderr, level=logging.ERROR,
-#                    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
 __all__ = ["openvas_parser"]
 
@@ -23,7 +21,7 @@ except ImportError:
     from xml.etree import ElementTree as Et
 
 
-def openvas_parser(input_files, min_level=Config.levels()["n"]):
+def openvas_parser(input_files, min_level=Config.levels()["n"], nmap_hostname_file=None):
     """
     This function takes an OpenVAS XML report and returns Vulnerability info
 
@@ -32,6 +30,9 @@ def openvas_parser(input_files, min_level=Config.levels()["n"]):
 
     :param min_level: Minimal level (none, low, medium, high, critical) for displaying vulnerabilities
     :type min_level: str
+
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames
+    :type nmap_hostname_file: str
 
     :return: list
 
@@ -52,6 +53,9 @@ def openvas_parser(input_files, min_level=Config.levels()["n"]):
 
     if not isinstance(min_level, str):
         raise TypeError("Expected basestring, got '{}' instead".format(type(min_level)))
+
+    # Load Nmap hostname dictionary
+    hostname_dictionary = load_hostnames_from_nmap(nmap_hostname_file)
 
     vulnerabilities = {}
 
@@ -118,7 +122,13 @@ def openvas_parser(input_files, min_level=Config.levels()["n"]):
             vuln_host = vuln.find("./host").text
             vuln_host_name = vuln.find("./host/hostname").text
             if vuln_host_name is None:
-                vuln_host_name = "N/A"
+                    vuln_host_name = "Unknown"
+            
+            # If we are using a Nmap file for hostnames try lookup host name
+            if hostname_dictionary is not None:
+                if vuln_host in hostname_dictionary:
+                    vuln_host_name = hostname_dictionary[vuln_host]
+
             logging.debug("* hostname:\t{}".format(vuln_host_name))  # DEBUG
             vuln_port = vuln.find("./port").text
             logging.debug(
@@ -226,3 +236,50 @@ def openvas_parser(input_files, min_level=Config.levels()["n"]):
             vulnerabilities[vuln_id] = vuln_store
 
     return list(vulnerabilities.values())
+
+def load_hostnames_from_nmap(nmap_hostname_file):
+    """
+    This function takes a Nmap file which contains IP address and hostnamesand loads the information
+    into a dictionary with the IP address being they key and the hostname being the value. This is returned
+    to the user. If None for nmap_hostname_file is supplied then None will be returned from the function 
+
+    :param nmap_hostname_file: File contining a list of hostnames and ips from Nmap to use when converting IPs to hostnames
+    :type nmap_hostname_file: str
+
+    :return: Dictionary
+
+    :raises: TypeError, IOError 
+    """
+
+    # No Nmap file to load so do nothing and return
+    if nmap_hostname_file is None:
+        return None
+
+    if nmap_hostname_file is not None and not isinstance(nmap_hostname_file, str):
+        raise TypeError("Expected str, got '{}' instead".format(type(nmap_hostname_file)))
+
+    with open(nmap_hostname_file, 'r' ) as f:
+        unprocessed_data = f.readlines()
+
+    # This string below has to be within the string be parsed
+    # otherwise that input line will be ignored
+    prefix_string = 'nmap scan report for '
+    loaded_hostnames = {}
+
+    for current_line in unprocessed_data:
+        current_line = current_line.lower()
+
+        if prefix_string in current_line:
+            # Remove known prefix and charectors that are not needed
+            current_line = current_line.replace(prefix_string, '')
+            current_line = current_line.replace('\n', '')
+            current_line = current_line.replace('(', '')
+            current_line = current_line.replace(')', '')
+            # Split hostname and IP
+            split_index = current_line.find(' ')
+            host_name = current_line[0:split_index]
+            ip = current_line[split_index + 1::]
+            loaded_hostnames[ip] = host_name
+        else:
+            logging.info('Line: \"' + current_line + '\". From nmap file not imported')
+    return loaded_hostnames
