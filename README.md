@@ -1,7 +1,7 @@
 # OpenVAS Reporting:  
 
 [![License](https://img.shields.io/github/license/TheGroundZero/openvasreporting.svg)](https://github.com/TheGroundZero/openvasreporting/blob/master/LICENSE)
-[![Known Vulnerabilities](https://snyk.io/test/github/TheGroundZero/openvasreporting/badge.svg?targetFile=requirements.txt)]
+![Known Vulnerabilities](https://snyk.io/test/github/TheGroundZero/openvasreporting/badge.svg?targetFile=requirements.txt)
 
 A tool to convert [OpenVAS](http://www.openvas.org/) XML into reports with the ability to supply a Nmap output file to use for hostname lookups. This repo has been forked from https://github.com/TheGroundZero/openvasreporting. Commit hash: (https://github.com/TheGroundZero/openvasreporting/commit/fe25b8359933df57c2129c2b1babde966d741f18)
 
@@ -16,35 +16,17 @@ A tool to convert [OpenVAS](http://www.openvas.org/) XML into reports with the a
 ## Installation
 
     # Install Python3 and pip3
-    apt(-get) install python3 python3-pip # Debian, Ubuntu
-    yum -y install python3 python3-pip    # CentOS
-    dnf install python3 python3-pip       # Fedora
-    # Clone repo
+    # Clone repository 
     git clone https://github.com/Bradley01429/openvasreporting
-    # Install required python packages
-    cd openvasreporting
+    # Open cloned to repository
+    # Run command below to install the required python packages
     pip3 install -r requirements.txt
     # Install module (not required when running from repo base folder)
-    #pip3 install .
-    
-
-Alternatively, you can install the package through the Python package installer 'pip'.  
-This currently has some issues (see #4)
-
-    # Install Python3 and pip3
-    apt(-get) install python3 python3-pip # Debian, Ubuntu
-    yum -y install python3 python3-pip    # CentOS
-    dnf install python3 python3-pip       # Fedora
-    # Install the package
-    pip3 install OpenVAS-Reporting
-
+    pip3 install .
 
 ## Usage
 
-    # When working from the Git repo
     python3 -m openvasreporting -i [OpenVAS xml file(s)] [-o [Output file]] [-f [Output format]] [-l [minimal threat level (n, l, m, h, c)]] [-t [docx template]]
-    # When using the pip package
-    openvasreporting -i [OpenVAS xml file(s)] [-o [Output file]] [-f [Output format]] [-l [minimal threat level (n, l, m, h, c)]] [-t [docx template]] [-nh Nmap hostname file]
 
 ### Parameters
 
@@ -59,11 +41,6 @@ This currently has some issues (see #4)
 
 ## Examples
 
-# Example input nmap file to use for hostname lookup
-    Nmap scan report for AAA.co.uk (192.171.1.12)
-    Nmap scan report for BBB.co.uk (10.254.240.175)
-    Nmap scan report for CCCC.test.local (10.254.230.10)
-
 ### Create Excel report from 1 OpenVAS XML report using default settings
 
     python3 -m openvasreporting -i openvasreport.xml -f xlsx
@@ -74,14 +51,19 @@ This currently has some issues (see #4)
 
 ### Create Excel report from multiple OpenVAS reports using default settings
 
-    # wildcard select
+    # Wildcard select
     python3 -m openvasreporting -i *.xml -f xlsx
-    # selective
+    # Selective
     python3 -m openvasreporting -i openvasreport1.xml -i openvasreport2.xml -f xlsx
 
 ### Create Word report from multiple OpenVAS reports, reporting only threat level high and up, use custom template
 
     python3 -m openvasreporting -i *.xml -o docxreport -f docx -l h -t "/home/user/myOpenvasTemplate.docx"
+
+### Example contents of nmap input file to use for hostnames instead of openvas reported values
+    Nmap scan report for AAA.co.uk (192.171.1.12)
+    Nmap scan report for BBB.co.uk (10.254.240.175)
+    Nmap scan report for CCCC.test.local (10.254.230.10)
 
 ## Result
 
