@@ -268,18 +268,27 @@ def load_hostnames_from_nmap(nmap_hostname_file):
 
     for current_line in unprocessed_data:
         current_line = current_line.lower()
+        try:
+            if prefix_string in current_line:
+                # Remove known prefix and charectors that are not needed
+                current_line = current_line.replace(prefix_string, '')
+                current_line = current_line.replace('\n', '')
+                # Check IP is in brackets
+                if '(' not in current_line:
+                    raise RuntimeError('Unable to parse hostname and IP')
+                current_line = current_line.replace('(', '')
+                current_line = current_line.replace(')', '')
+                # Split hostname and IP
+                split_index = current_line.find(' ')
+                host_name = current_line[0:split_index]
+                ip = current_line[split_index + 1::]
+                if len(host_name) == 0 or len(ip) == 0 or split_index == -1:
+                    raise RuntimeError('Unable to parse hostname and IP')
 
-        if prefix_string in current_line:
-            # Remove known prefix and charectors that are not needed
-            current_line = current_line.replace(prefix_string, '')
-            current_line = current_line.replace('\n', '')
-            current_line = current_line.replace('(', '')
-            current_line = current_line.replace(')', '')
-            # Split hostname and IP
-            split_index = current_line.find(' ')
-            host_name = current_line[0:split_index]
-            ip = current_line[split_index + 1::]
-            loaded_hostnames[ip] = host_name
-        else:
-            logging.info('Line: \"' + current_line + '\". From nmap file not imported')
+                loaded_hostnames[ip] = host_name
+            else:
+                logging.info('Line: \"' + current_line + '\". From nmap file not imported')
+        except:
+            logging.info('Line: \"' + current_line + '\". From nmap file cannot be parsed')
+
     return loaded_hostnames
